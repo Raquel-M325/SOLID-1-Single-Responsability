@@ -13,18 +13,12 @@ class CategoriaView:
 
         registros = service.listar()
 
-        return render(
-            request,
-            'categorias_listar.html',
-            context={'registros': registros}
-        )
+        return render(request,'categorias_listar.html',context={'registros': registros})
 
     
     def exibir_incluir(request):
         return render(
-            request,
-            'categorias_editar.html',
-            context={
+            request,'categorias_editar.html',context={
                 'acao': 'Inclusão',
                 'form': CategoriaForm()
             }
@@ -39,9 +33,7 @@ class CategoriaView:
             'id': registro[0],
             'descricao': registro[1]
         }
-        return render(
-            request,
-            'categorias_editar.html',
+        return render(request,'categorias_editar.html',
             context={
                 'acao': 'Alteração',
                 'form': CategoriaForm(initial=registro_dict)
@@ -59,8 +51,7 @@ class CategoriaView:
         }
 
         return render(
-            request,
-            'categorias_editar.html',
+            request,'categorias_editar.html',
             context={
                 'acao': 'Exclusão',
                 'form': CategoriaForm(initial=registro_dict)
