@@ -7,9 +7,8 @@ from django.urls import reverse
 from DatabaseConnection import DatabaseConnection
 
 class CategoriaRepository:
-    def __init__(self, id):
+    def __init__(self):
         self.conexao =  DatabaseConnection()
-
 
     def listar(self):
         sql = '''

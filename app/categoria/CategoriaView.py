@@ -5,74 +5,60 @@ from django.shortcuts import render
 from django import forms
 from django.urls import reverse
 from CategoriaService import CategoriaService
+from CategoriaRepository import CategoriaRepository
 
 
-class CategoriaView: 
-    def exibir_listar(request):  #mostra a página de listagem das categorias. Cria uma instância do CategoriaService e solicita os registros cadastrados. Depois, envia os registros para o template categorias_listar.html.        
-        service = CategoriaService()
-        registros = service.listar()
+class CategoriaViewForm(forms.Form):
+    id = forms.IntegerField(label='ID',widget=forms.TextInput(attrs={'readonly': 'readonly'}),required=False)
+    descricao = forms.CharField(label='Descrição',max_length=30,required=True)
+
+class CategoriaView:
+    def __init__(self):
+        self.repository = CategoriaRepository()
+        self.service = CategoriaService(self.repository)
+
+    def exibir_listar(self, request):
+        registros = self.service.listar()
+
         return render(request,'categorias_listar.html',context={'registros': registros})
 
-    def exibir_incluir(request):  #exibe o formulário para inclusão de uma nova categoria. A View cria um formulário vazio e informa ao template que a operação que será realizada é uma inclusão.
-        return render(
-            request,'categorias_editar.html',context={
-                'acao': 'Inclusão',
-                'form': CategoriaForm()
-            }
-        )
-    #mostra o formulário de alteração de uma categoria. Recebe o ID da categoria, solicita os dados ao CategoriaService e utiliza esses dados para preencher o formulário de alteração.
-    def exibir_alterar(request, id):
-        service = CategoriaService()
+    def exibir_incluir(self, request):
+        return render(request,'categorias_editar.html',context={'acao': 'Inclusão','form': CategoriaViewForm()})
 
-        registro = service.obter(id)
-
-        registro_dict = {
-            'id': registro[0],
-            'descricao': registro[1]
-        }
-        return render(request,'categorias_editar.html',
-            context={
-                'acao': 'Alteração',
-                'form': CategoriaForm(initial=registro_dict)
-            }
-        )
-    # Mostrar o formulário de exclusão de uma categoria.Recebe o ID da categoria, busca seus dados através do CategoriaService e apresenta essas informações para que o usuário possa confirmar a exclusão.
-    def exibir_excluir(request, id):
-        service = CategoriaService()
-
-        registro = service.obter(id)
+    def exibir_alterar(self, request):
+        registro = self.service.obter(self.id)
 
         registro_dict = {
             'id': registro[0],
             'descricao': registro[1]
         }
 
-        return render(
-            request,'categorias_editar.html',
-            context={
-                'acao': 'Exclusão',
-                'form': CategoriaForm(initial=registro_dict)
-            }
-        )
-        #recebe os dados enviados pelo formulário. Identifica se a operação solicitada é uma inclusão, alteração ou exclusão e encaminha a operação correspondente para o CategoriaService.
-    def exibir_salvar(request):
-        service = CategoriaService()
+        return render(request,'categorias_editar.html',context={'acao': 'Alteração','form': CategoriaViewForm(initial=registro_dict)})
 
+    def exibir_excluir(self, request):
+        registro = self.service.obter(self.id)
+
+        registro_dict = {
+            'id': registro[0],
+            'descricao': registro[1]
+        }
+
+        return render(request,'categorias_editar.html',context={'acao': 'Exclusão','form': CategoriaViewForm(initial=registro_dict)})
+
+    def exibir_salvar(self, request):
         form_data = request.POST
         acao = form_data['acao']
 
-        if acao == 'Inclusão': # Se a ação for inclusão, solicita ao Service que cadastre a categoria.
-            service.inserir(form_data['descricao'])
+        if acao == 'Inclusão':
+            self.service.inserir(form_data['descricao'])
 
         elif acao == 'Alteração':
-            service.atualizar(
+            self.service.atualizar(
                 form_data['id'],
                 form_data['descricao']
             )
 
-        elif acao == 'Exclusão': #vai excluir 
-            service.excluir(form_data['id'])
+        elif acao == 'Exclusão':
+            self.service.excluir(form_data['id'])
 
-        return HttpResponseRedirect( #manda pra pagina de categorias
-            reverse('categorias')
-        )
+        return HttpResponseRedirect(reverse('categorias'))
