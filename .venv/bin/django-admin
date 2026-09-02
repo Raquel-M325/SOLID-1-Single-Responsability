@@ -1,4 +1,4 @@
-#!/home/raquel/Downloads/SOLID-1-Single-Responsability/SOLID-1-Single-Responsability/.venv/bin/python3
+#!/home/joaoricardo/Documentos/SOLID-1-Single-Responsability/.venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

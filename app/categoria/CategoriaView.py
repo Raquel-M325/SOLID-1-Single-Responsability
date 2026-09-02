@@ -1,11 +1,9 @@
-import sys
-
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django import forms
 from django.urls import reverse
-from CategoriaService import CategoriaService
-from CategoriaRepository import CategoriaRepository
+from .CategoriaService import CategoriaService
+from .CategoriaRepository import CategoriaRepository
 
 
 class CategoriaViewForm(forms.Form):
@@ -25,8 +23,8 @@ class CategoriaView:
     def exibir_incluir(self, request):
         return render(request,'categorias_editar.html',context={'acao': 'Inclusão','form': CategoriaViewForm()})
 
-    def exibir_alterar(self, request):
-        registro = self.service.obter(self.id)
+    def exibir_alterar(self, request, id):
+        registro = self.service.obter(id)
 
         registro_dict = {
             'id': registro[0],
@@ -35,8 +33,8 @@ class CategoriaView:
 
         return render(request,'categorias_editar.html',context={'acao': 'Alteração','form': CategoriaViewForm(initial=registro_dict)})
 
-    def exibir_excluir(self, request):
-        registro = self.service.obter(self.id)
+    def exibir_excluir(self, request, id):
+        registro = self.service.obter(id)
 
         registro_dict = {
             'id': registro[0],

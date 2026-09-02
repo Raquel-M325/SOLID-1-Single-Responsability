@@ -1,14 +1,8 @@
-import sys
-
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django import forms
-from django.urls import reverse
-from DatabaseConnection import DatabaseConnection
+from ..DatabaseConnection import DatabaseConnection
 
 class CategoriaRepository:
     def __init__(self):
-        self.conexao =  DatabaseConnection()
+        self.conexao = DatabaseConnection()
 
     def listar(self):
         sql = '''
@@ -18,21 +12,25 @@ class CategoriaRepository:
             ORDER BY descricao
         '''
 
-        conexao = self.conexao
-        
-        # cria um cursor(), executa o SELECT informado e traz os todos os registros
-        self.registros = conexao.cursor().execute(sql).fetchall()
-
-        # define a pagina a ser carregada, adicionando os registros das tabelas 
-        return render(request, 'categorias_listar.html', context={'registros': registros})
+        return self.conexao.executar(sql).fetchall()
     
-    def buscar_por_id(id):
+    def obter(self, id):
+        return self.conexao.executar(
+            'SELECT id, descricao FROM Categoria WHERE id = ?', (id,)
+        ).fetchone()
 
+    def inserir(self, descricao):
+        self.conexao.executar(
+            'INSERT INTO Categoria (descricao) VALUES (?)', (descricao,)
+        )
+        self.conexao.confirmar()
 
-    def inserir(id_categoria, descricao, preco_unitario, quantidade_estoque):
+    def atualizar(self, id, descricao):
+        self.conexao.executar(
+            'UPDATE Categoria SET descricao = ? WHERE id = ?', (descricao, id)
+        )
+        self.conexao.confirmar()
 
-    
-    def atualizar(id, id_categoria, descricao, preco_unitario):
-
-
-    def excluir(id):
+    def excluir(self, id):
+        self.conexao.executar('DELETE FROM Categoria WHERE id = ?', (id,))
+        self.conexao.confirmar()

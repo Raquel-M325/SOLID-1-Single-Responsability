@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV /home/raquel/Downloads/SOLID-1-Single-Responsability/SOLID-1-Single-Responsability/.venv
+set -gx VIRTUAL_ENV /home/joaoricardo/Documentos/SOLID-1-Single-Responsability/.venv
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH
